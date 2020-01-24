@@ -2,6 +2,10 @@
 /dist
 /node_modules
 
+# Environment specific
+config/*.yml
+!config/*.dist.yml
+
 # Logs
 logs
 *.log
