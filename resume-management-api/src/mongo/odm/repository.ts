@@ -14,13 +14,28 @@ export class Repository<Doc extends { _id: ObjectId }> {
     return insertedDocument;
   }
 
-  async findOne(filter: Partial<Doc>): Promise<Doc> {
+  async findOne(idOrFilter?: string | Partial<Doc>): Promise<Doc> {
     const db: Db = await this.mongo.connect();
     const collection: Collection<Doc> = db.collection<Doc>(this.collectionName);
+    const filter = this.parseFilter(idOrFilter);
     const foundDocument = await collection.findOne(filter);
 
     this.mongo.close();
 
     return foundDocument;
+  }
+
+  private parseFilter(idOrFilter: string | Partial<Doc>): Partial<Doc> {
+    let filter;
+
+    if (typeof idOrFilter === 'string') {
+      filter = {
+        _id: new ObjectId(idOrFilter),
+      };
+    } else {
+      filter = idOrFilter;
+    }
+
+    return filter || {};
   }
 }
