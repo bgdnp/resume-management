@@ -7,3 +7,13 @@ services:
       - "3000:3000"
     volumes:
       - "./resume-management-api/:/usr/app/"
+    links:
+      - database
+
+  database:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: resume_management

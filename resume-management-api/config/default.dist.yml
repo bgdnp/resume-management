@@ -1,1 +1,7 @@
 environment: development
+mongodb:
+  host: database
+  port: 27017
+  database: resume_management
+  username: admin
+  password: secret
