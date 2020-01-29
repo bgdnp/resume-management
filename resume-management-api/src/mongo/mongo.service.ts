@@ -1,36 +1,51 @@
-import { Injectable } from '@nestjs/common';
-import { MongoClient, Db } from 'mongodb';
-import { ConfigService } from '../config/config.service';
-import { Repository } from './odm/repository';
+import { MongoClient, MongoClientOptions, Db } from 'mongodb';
 import { Document } from './odm/document';
-import { DatabaseConfig } from './typings/database-config';
+import { Collection } from './odm/collection';
+import { TMongoConfig } from './typings';
+import { ConfigService } from '../config/config.service';
 
-@Injectable()
 export class MongoService {
-  private url: string;
-  private database: string;
+  public isConnected: boolean = false;
+  private config: TMongoConfig;
   private client: MongoClient;
+  private database: Db;
 
-  constructor(private readonly config: ConfigService) {
-    const db: DatabaseConfig = this.config.get<DatabaseConfig>('mongodb');
+  constructor(
+    private configService: ConfigService,
+    options?: Omit<MongoClientOptions, 'auth' | 'authMechanism' | 'useUnifiedTopology'>,
+  ) {
+    this.config = this.configService.get<TMongoConfig>('mongodb');
 
-    this.url = `mongodb://${db.username}:${db.password}@${db.host}:${db.port}`;
-    this.database = db.database;
+    const { host, port, user, password } = this.config;
+
+    this.client = new MongoClient(`mongodb://${host}:${port}`, {
+      auth: { user, password },
+      useUnifiedTopology: true,
+      ...options,
+    });
   }
 
-  async connect(): Promise<Db> {
-    const client: MongoClient = new MongoClient(this.url);
+  async connect(): Promise<MongoService> {
+    await this.client.connect();
+    this.database = this.client.db(this.config.database);
+    this.isConnected = true;
 
-    this.client = await client.connect();
-
-    return await this.client.db(this.database);
+    return this;
   }
 
-  close(): Promise<void> {
-    return this.client.close();
+  async disconnect(): Promise<MongoService> {
+    await this.client.close();
+    this.db = null;
+    this.isConnected = false;
+
+    return this;
   }
 
-  createRepository<Doc extends Document>(schema: { new (): Doc }): Repository<Doc> {
-    return new Repository<Doc>(this, schema.name);
+  db(): Db {
+    return this.database;
+  }
+
+  collection<TDocument extends Document>(document: { new (): TDocument }): Collection<TDocument> {
+    return new Collection<TDocument>(this, document);
   }
 }
