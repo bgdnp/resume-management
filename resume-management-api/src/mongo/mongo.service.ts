@@ -3,17 +3,16 @@ import { Document } from './odm/document';
 import { Collection } from './odm/collection';
 import { TMongoConfig } from './typings';
 import { ConfigService } from '../config/config.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class MongoService {
   public isConnected: boolean = false;
   private config: TMongoConfig;
   private client: MongoClient;
   private database: Db;
 
-  constructor(
-    private configService: ConfigService,
-    options?: Omit<MongoClientOptions, 'auth' | 'authMechanism' | 'useUnifiedTopology'>,
-  ) {
+  constructor(private configService: ConfigService) {
     this.config = this.configService.get<TMongoConfig>('mongodb');
 
     const { host, port, user, password } = this.config;
@@ -21,7 +20,6 @@ export class MongoService {
     this.client = new MongoClient(`mongodb://${host}:${port}`, {
       auth: { user, password },
       useUnifiedTopology: true,
-      ...options,
     });
   }
 

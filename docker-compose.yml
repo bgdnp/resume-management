@@ -1,12 +1,13 @@
-version: "3.7"
+version: '3.7'
 
 services:
   api:
     build: ./resume-management-api
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
-      - "./resume-management-api/:/usr/app/"
+      - './resume-management-api/src/:/usr/app/src/'
+      - './resume-management-api/config/:/usr/app/config/'
     links:
       - database
 

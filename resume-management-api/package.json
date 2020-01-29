@@ -23,6 +23,7 @@
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
     "@nestjs/platform-express": "^6.7.2",
+    "bcrypt": "^3.0.7",
     "config": "^3.2.5",
     "mongodb": "^3.5.2",
     "reflect-metadata": "^0.1.13",
