@@ -1,18 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './documents/user';
 import { MongoService } from '../mongo/mongo.service';
-import { Repository } from '../mongo/odm/repository';
-import { ObjectId } from 'mongodb';
+import { Collection } from '../mongo/odm/collection';
 
 @Injectable()
 export class UserService {
-  private repository: Repository<User>;
+  private collection: Collection<User>;
 
   constructor(mongo: MongoService) {
-    this.repository = mongo.createRepository(User);
+    this.collection = mongo.collection(User);
   }
 
-  getUser(id: string): Promise<User> {
-    return this.repository.findOne(id);
+  async getUser(id: string): Promise<User> {
+    return (await this.collection.find(id)) as User;
   }
 }
