@@ -1,4 +1,14 @@
-import { Controller, Get, Param, Post, Body, UseInterceptors, ClassSerializerInterceptor, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { UserService } from './services/user.service';
 import { User } from './documents/user';
 import { CreateUserDto } from './dto';
@@ -27,5 +37,10 @@ export class UserController {
   @Put()
   update(@Body() body: Partial<CreateUserDto> & { id: string }) {
     return this.service.update(body);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string): Promise<{ deleted: boolean; id: string }> {
+    return this.service.delete(id);
   }
 }

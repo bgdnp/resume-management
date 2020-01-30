@@ -45,4 +45,15 @@ export class UserService {
 
     return (await this.collection.find(id)) as User;
   }
+
+  async delete(id: string): Promise<{ deleted: boolean; id: string }> {
+    const user = (await this.collection.find(id)) as User;
+
+    await this.collection.delete(user);
+
+    return {
+      deleted: true,
+      id: id,
+    };
+  }
 }
