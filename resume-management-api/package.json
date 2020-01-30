@@ -25,6 +25,7 @@
     "@nestjs/platform-express": "^6.7.2",
     "bcrypt": "^3.0.7",
     "class-transformer": "^0.2.3",
+    "class-validator": "^0.11.0",
     "config": "^3.2.5",
     "mongodb": "^3.5.2",
     "reflect-metadata": "^0.1.13",

@@ -8,8 +8,9 @@ export class Document {
   id: string;
 
   constructor(doc?: Document) {
-    doc.id = doc._id.toHexString();
-
-    Object.assign(this, doc);
+    if (doc?._id) {
+      doc.id = doc._id.toHexString();
+      Object.assign(this, doc);
+    }
   }
 }
