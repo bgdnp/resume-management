@@ -34,9 +34,14 @@ export class Collection<TDocument extends Document> {
     return new Cursor<TDocument>(cursor, this.schema);
   }
 
-  async update(document: TDocument): Promise<string> {
-    const { _id, ...$set } = document;
+  async update(document: Partial<TDocument> & ({ _id: ObjectId } | { id: string })): Promise<string> {
     const collection = await this.collection();
+
+    let { _id, id, ...$set } = document;
+
+    if (!_id) {
+      _id = new ObjectId(id);
+    }
 
     await collection.updateOne({ _id }, { $set });
 

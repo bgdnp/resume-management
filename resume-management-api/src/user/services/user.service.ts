@@ -39,4 +39,10 @@ export class UserService {
 
     return await cursor.chunk(chunk || 1);
   }
+
+  async update(dto: Partial<CreateUserDto> & { id: string }): Promise<User> {
+    const id: string = await this.collection.update(dto);
+
+    return (await this.collection.find(id)) as User;
+  }
 }

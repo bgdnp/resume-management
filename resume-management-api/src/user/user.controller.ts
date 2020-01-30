@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, UseInterceptors, ClassSerializerInterceptor, Put } from '@nestjs/common';
 import { UserService } from './services/user.service';
 import { User } from './documents/user';
 import { CreateUserDto } from './dto';
@@ -15,12 +15,17 @@ export class UserController {
   }
 
   @Get()
-  async get(): Promise<User[]> {
-    return (await this.service.get()) as User[];
+  get(): Promise<User[]> {
+    return this.service.get() as Promise<User[]>;
   }
 
   @Get(':idOrChunk')
   getWithParam(@Param('idOrChunk') idOrChunk: string): Promise<User | User[]> {
     return this.service.get(idOrChunk);
+  }
+
+  @Put()
+  update(@Body() body: Partial<CreateUserDto> & { id: string }) {
+    return this.service.update(body);
   }
 }
