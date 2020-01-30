@@ -37,6 +37,6 @@ export class UserService {
   private async getMany(chunk?: number): Promise<User[]> {
     const cursor = (await this.collection.find({})) as Cursor<User>;
 
-    return await cursor.chunk(chunk || 1, 1);
+    return await cursor.chunk(chunk || 1);
   }
 }

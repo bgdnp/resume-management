@@ -2,8 +2,9 @@ import { Controller, Get, Param, Post, Body, UseInterceptors, ClassSerializerInt
 import { UserService } from './services/user.service';
 import { User } from './documents/user';
 import { CreateUserDto } from './dto';
+import { TransformResponseInterceptor } from '../interceptors/transform-response.interceptor';
 
-@UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(TransformResponseInterceptor, ClassSerializerInterceptor)
 @Controller('user')
 export class UserController {
   constructor(private readonly service: UserService) {}
@@ -14,12 +15,12 @@ export class UserController {
   }
 
   @Get()
-  async getMany(): Promise<User[]> {
+  async get(): Promise<User[]> {
     return (await this.service.get()) as User[];
   }
 
   @Get(':idOrChunk')
-  get(@Param('idOrChunk') idOrChunk?: string): Promise<User | User[]> {
+  getWithParam(@Param('idOrChunk') idOrChunk: string): Promise<User | User[]> {
     return this.service.get(idOrChunk);
   }
 }
