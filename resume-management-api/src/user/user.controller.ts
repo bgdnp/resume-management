@@ -9,12 +9,17 @@ export class UserController {
   constructor(private readonly service: UserService) {}
 
   @Post()
-  createUser(@Body() body: CreateUserDto): Promise<User> {
-    return this.service.createUser(body);
+  create(@Body() body: CreateUserDto): Promise<User> {
+    return this.service.create(body);
   }
 
-  @Get(':id')
-  getUser(@Param('id') id: string): Promise<User> {
-    return this.service.getUser(id);
+  @Get()
+  async getMany(): Promise<User[]> {
+    return (await this.service.get()) as User[];
+  }
+
+  @Get(':idOrChunk')
+  get(@Param('idOrChunk') idOrChunk?: string): Promise<User | User[]> {
+    return this.service.get(idOrChunk);
   }
 }

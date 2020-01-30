@@ -13,6 +13,20 @@ export class Cursor<TDocument extends Document> {
     });
   }
 
+  async toArray(): Promise<TDocument[]> {
+    const items = await this.cursor.toArray();
+
+    return items.map(item => (this.schema ? new this.schema(item) : item));
+  }
+
+  async chunk(chunk: number, limit: number = 10): Promise<TDocument[]> {
+    const skip = (chunk - 1) * limit;
+
+    return await this.skip(skip)
+      .limit(limit)
+      .toArray();
+  }
+
   skip(value: number): Cursor<TDocument> {
     this.cursor = this.cursor.skip(value);
 

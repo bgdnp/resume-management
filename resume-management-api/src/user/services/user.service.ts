@@ -4,6 +4,7 @@ import { MongoService } from '../../mongo/mongo.service';
 import { Collection } from '../../mongo/odm/collection';
 import { CreateUserDto } from '../dto';
 import { PasswordService } from './password.service';
+import { Cursor } from '../../mongo/odm/cursor';
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,7 @@ export class UserService {
     this.collection = mongoService.collection(User);
   }
 
-  async createUser(dto: CreateUserDto): Promise<User> {
+  async create(dto: CreateUserDto): Promise<User> {
     dto.password = await this.passwordService.hash(dto.password);
 
     const id: string = await this.collection.insert(dto);
@@ -21,7 +22,21 @@ export class UserService {
     return (await this.collection.find(id)) as User;
   }
 
-  async getUser(id: string): Promise<User> {
+  async get(idOrChunk?: string): Promise<User | User[]> {
+    if (!idOrChunk || Number.isInteger(Number(idOrChunk))) {
+      return await this.getMany(Number(idOrChunk));
+    }
+
+    return await this.getOne(idOrChunk);
+  }
+
+  private async getOne(id: string): Promise<User> {
     return (await this.collection.find(id)) as User;
+  }
+
+  private async getMany(chunk?: number): Promise<User[]> {
+    const cursor = (await this.collection.find({})) as Cursor<User>;
+
+    return await cursor.chunk(chunk || 1, 1);
   }
 }
