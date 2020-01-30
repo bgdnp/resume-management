@@ -1,4 +1,4 @@
-import { MongoClient, MongoClientOptions, Db } from 'mongodb';
+import { MongoClient, Db } from 'mongodb';
 import { Document } from './odm/document';
 import { Collection } from './odm/collection';
 import { TMongoConfig } from './typings';

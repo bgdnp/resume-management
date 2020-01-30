@@ -1,16 +1,18 @@
-import { Collection as MongoCollection, Cursor, ObjectId, InsertOneWriteOpResult } from 'mongodb';
+import { Collection as MongoCollection, Cursor as MongoCursor, ObjectId, InsertOneWriteOpResult } from 'mongodb';
 import { Document } from './document';
 import { MongoService } from '../mongo.service';
+import { Cursor } from './cursor';
+import { TSchema } from '../typings';
 
 export class Collection<TDocument extends Document> {
   private collectionName: string;
   private collectionInstance: MongoCollection;
 
-  constructor(private service: MongoService, schema?: { new (): TDocument }) {
+  constructor(private service: MongoService, private schema?: TSchema<TDocument>) {
     this.collectionName = schema?.name + 'Collection' || this.constructor.name;
   }
 
-  async insert(document: Omit<TDocument, '_id'> & { _id?: any }): Promise<string> {
+  async insert(document: Omit<TDocument, '_id' | 'id'> & { _id?: any }): Promise<string> {
     const collection = await this.collection();
 
     const inserted: InsertOneWriteOpResult<TDocument> = await collection.insertOne(document);
@@ -22,10 +24,14 @@ export class Collection<TDocument extends Document> {
     const collection = await this.collection();
 
     if (typeof filter === 'string') {
-      return (await collection.findOne({ _id: new ObjectId(filter) })) as TDocument;
+      const document: TDocument = (await collection.findOne({ _id: new ObjectId(filter) })) as TDocument;
+
+      return this.schema ? new this.schema(document) : document;
     }
 
-    return collection.find(filter) as Cursor<TDocument>;
+    const cursor: MongoCursor = collection.find(filter) as MongoCursor<TDocument>;
+
+    return new Cursor<TDocument>(cursor, this.schema);
   }
 
   async update(document: TDocument): Promise<string> {
