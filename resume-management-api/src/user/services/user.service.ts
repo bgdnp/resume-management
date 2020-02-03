@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from '../documents/user';
 import { MongoService } from '../../mongo/mongo.service';
 import { Collection } from '../../mongo/odm/collection';
-import { CreateUserDto } from '../dto';
+import { CreateUserDto, UpdateUserDto } from '../dto';
 import { PasswordService } from './password.service';
 import { Cursor } from '../../mongo/odm/cursor';
 
@@ -40,7 +40,7 @@ export class UserService {
     return await cursor.chunk(chunk || 1);
   }
 
-  async update(dto: Partial<CreateUserDto> & { id: string }): Promise<User> {
+  async update(dto: UpdateUserDto): Promise<User> {
     const id: string = await this.collection.update(dto);
 
     return (await this.collection.find(id)) as User;

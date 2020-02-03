@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './services/user.service';
 import { User } from './documents/user';
-import { CreateUserDto } from './dto';
+import { CreateUserDto, UpdateUserDto } from './dto';
 import { TransformResponseInterceptor } from '../interceptors/transform-response.interceptor';
 
 @UseInterceptors(TransformResponseInterceptor, ClassSerializerInterceptor)
@@ -35,7 +35,7 @@ export class UserController {
   }
 
   @Put()
-  update(@Body() body: Partial<CreateUserDto> & { id: string }) {
+  update(@Body() body: UpdateUserDto) {
     return this.service.update(body);
   }
 
