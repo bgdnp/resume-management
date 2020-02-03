@@ -8,5 +8,6 @@ import { PasswordService } from './services/password.service';
   imports: [MongoModule],
   controllers: [UserController],
   providers: [UserService, PasswordService],
+  exports: [UserService, PasswordService],
 })
 export class UserModule {}

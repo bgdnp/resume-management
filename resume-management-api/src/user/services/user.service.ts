@@ -30,6 +30,13 @@ export class UserService {
     return await this.getOne(idOrChunk);
   }
 
+  async getByEmail(email: string): Promise<User> {
+    const cursor = (await this.collection.find({ email })) as Cursor<User>;
+    const found = await cursor.limit(1).toArray();
+
+    return found[0] || null;
+  }
+
   private async getOne(id: string): Promise<User> {
     return (await this.collection.find(id)) as User;
   }
