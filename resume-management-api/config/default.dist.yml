@@ -5,3 +5,6 @@ mongodb:
   user: admin
   password: secret
   database: resume_management
+jwt:
+  secret: some_secret_key
+  expire: 60 #seconds

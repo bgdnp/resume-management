@@ -5,10 +5,12 @@ import { User } from '../user/documents/user';
 import { CreateUserDto } from '../user/dto';
 import { PasswordService } from '../user/services/password.service';
 import { LoginUserDto } from './dto';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
@@ -33,12 +35,16 @@ export class AuthService {
       };
     }
 
-    const token = this.jwtService.sign({
-      id: user.id,
-      name: user.name,
-    });
+    const expiresIn = this.configService.get<number>('jwt.expire');
+    const token = this.jwtService.sign(
+      {
+        id: user.id,
+        name: user.name,
+      },
+      { expiresIn },
+    );
 
-    return { token };
+    return { token, expiresIn };
   }
 
   public async register(dto: CreateUserDto): Promise<User> {
