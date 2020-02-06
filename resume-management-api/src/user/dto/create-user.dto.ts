@@ -1,9 +1,7 @@
-import { Length, IsEmail, MinLength, IsArray, ValidateNested, IsISO8601, IsAlpha, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
-import { Address } from './subclasses/address';
-import { Email } from './subclasses/email';
+import { Length, IsEmail, MinLength } from 'class-validator';
+import { UserDto } from './user.dto';
 
-export class CreateUserDto {
+export class CreateUserDto extends UserDto {
   @Length(2, 100)
   name: string;
 
@@ -12,29 +10,4 @@ export class CreateUserDto {
 
   @MinLength(6)
   password: string;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => Email)
-  allEmails?: Email[];
-
-  @IsOptional()
-  @IsArray()
-  @Type(() => String)
-  phoneNumbers?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => Address)
-  addresses?: Address[];
-
-  @IsOptional()
-  @IsISO8601()
-  birthday?: string;
-
-  @IsOptional()
-  @IsAlpha()
-  nationality?: string;
 }
